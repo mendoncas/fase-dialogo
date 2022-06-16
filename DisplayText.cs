@@ -3,60 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-// using TMPro;
-public class DialogueComponent
-{
-    public string text;
-}
-
-public class Question : DialogueComponent
-{
-    public string text;
-
-    public Answer firstAnswer;
-
-    public Answer secondAnswer;
-
-    public Question(string text, Answer left, Answer right)
-    {
-        this.firstAnswer = left;
-        this.secondAnswer = right;
-        this.text = text;
-    }
-
-    public Question(string text)
-    {
-        text = text;
-    }
-}
-
-public class Answer : DialogueComponent
-{
-    public DialogueComponent next;
-
-    public Answer(string text, Question next)
-    {
-        text = text;
-        next = next;
-    }
-
-    public Answer(string text)
-    {
-        text = text;
-    }
-}
-
 public class DisplayText : MonoBehaviour
 {
     public Text DialogueText;
-
-    public Answer[] answers;
 
     public Button firstButton;
 
     public Button secondButton;
 
-    public Question[] questions;
 
     [SerializeField] AudioClip[] badMeows;
     [SerializeField] AudioClip[] goodMeows;
@@ -90,13 +44,13 @@ public class DisplayText : MonoBehaviour
                 "Linus não consegue dizer o que sente e isso o mantém preso com os próprios pensamentos. Linus volta pra casa, sabendo que amanhã terá que enfrentar tudo de novo. Mas quem sabe alguma outra vez... Um dia após o outro, né?"
             };
 
-    private DialogueComponent current;
-
     private bool isDisplaying;
 
     private int sentenceIndex = 0;
 
     private int buttonIndex = 0;
+    Vector3 pos;
+    float timeleft = 3f;
 
     void Start()
     {
@@ -110,6 +64,11 @@ public class DisplayText : MonoBehaviour
     // Update is coalled once per frame
     void Update()
     {
+        timeleft -= Time.deltaTime;
+        if(timeleft < 0){
+            RandomizeButtonPosition();
+            timeleft = 0.5f;
+        }
         if (
             Input.GetKeyDown(KeyCode.Space) &&
             isDisplaying == false &&
@@ -172,6 +131,7 @@ public class DisplayText : MonoBehaviour
     {
         Debug.Log("SEGUNDO BOTÃO CLICADO");
         PlayBadMeow();
+        // secondButton.anchorPosition = new Vector3(pos.x, 840, pos.z);
         // isDisplaying = true;
         // StartCoroutine(displayDialogue(perguntas[sentenceIndex]));
         // firstButton.GetComponentInChildren<Text>().text =
@@ -182,6 +142,14 @@ public class DisplayText : MonoBehaviour
         // sentenceIndex+=2;
     }
     
+    void RandomizeButtonPosition(){
+        var btn = GameObject.Find("secondButton");
+        var pos = btn.transform.position;
+        pos.x -= UnityEngine.Random.Range(-31, 31);
+        pos.y -= UnityEngine.Random.Range(-19, 19);
+        btn.transform.position = pos;
+
+    }
     void PlayBadMeow(){
         AudioClip clip = badMeows[UnityEngine.Random.Range(0, badMeows.Length)];
         audio.PlayOneShot(clip);
