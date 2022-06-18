@@ -5,6 +5,13 @@ using UnityEngine.UI;
 
 public class DisplayText : MonoBehaviour
 {
+
+    //Novo
+    public int countfirst;
+    //Novo
+    public int countsecond;
+    public GameObject DialogsOfRichard;
+
     public Text DialogueText;
 
     public Button firstButton;
@@ -50,7 +57,7 @@ public class DisplayText : MonoBehaviour
 
     private int buttonIndex = 0;
     Vector3 pos;
-    float timeleft = 3f;
+    float timeleft = 0f;
 
     void Start()
     {
@@ -59,6 +66,7 @@ public class DisplayText : MonoBehaviour
         DialogueText.text = "";
         firstButton.onClick.AddListener (secondOnClick);
         secondButton.onClick.AddListener (firstOnClick);
+        this.DialogsOfRichard.GetComponent<DialogsOfRichard>().change("", false);
     }
 
     // Update is coalled once per frame
@@ -67,7 +75,7 @@ public class DisplayText : MonoBehaviour
         timeleft -= Time.deltaTime;
         if(timeleft < 0){
             RandomizeButtonPosition();
-            timeleft = 0.5f;
+            timeleft = 0.1f;
         }
         if (
             Input.GetKeyDown(KeyCode.Space) &&
@@ -118,35 +126,28 @@ public class DisplayText : MonoBehaviour
         Debug.Log("PRIMEIRO BOTÃO CLICADO");
         PlayGoodMeow();
         isDisplaying = true;
-        StartCoroutine(displayDialogue(perguntas[sentenceIndex]));
-        firstButton.GetComponentInChildren<Text>().text =
-            respostas[buttonIndex];
-        secondButton.GetComponentInChildren<Text>().text =
-            respostas[buttonIndex + 1];
-        buttonIndex += 2;
-        sentenceIndex++;
+        countfirst++;
+
+        //Novo
+        this.DialogsOfRichard.GetComponent<DialogsOfRichard>().change("0", false);
     }
 
     public void secondOnClick()
     {
         Debug.Log("SEGUNDO BOTÃO CLICADO");
         PlayBadMeow();
-        // secondButton.anchorPosition = new Vector3(pos.x, 840, pos.z);
-        // isDisplaying = true;
-        // StartCoroutine(displayDialogue(perguntas[sentenceIndex]));
-        // firstButton.GetComponentInChildren<Text>().text =
-        //     respostas[buttonIndex];
-        // secondButton.GetComponentInChildren<Text>().text =
-        //     respostas[buttonIndex + 1];
-        // buttonIndex += 2;
-        // sentenceIndex+=2;
+        isDisplaying = true;
+        countsecond++;
+
+        //Novo
+        this.DialogsOfRichard.GetComponent<DialogsOfRichard>().change("1", false);
     }
-    
+
     void RandomizeButtonPosition(){
         var btn = GameObject.Find("secondButton");
         var pos = btn.transform.position;
-        pos.x -= UnityEngine.Random.Range(-31, 31);
-        pos.y -= UnityEngine.Random.Range(-19, 19);
+        pos.x -= UnityEngine.Random.Range(-21, 21);
+        pos.y -= UnityEngine.Random.Range(-9, 9);
         btn.transform.position = pos;
 
     }
@@ -159,4 +160,8 @@ public class DisplayText : MonoBehaviour
         AudioClip clip = goodMeows[UnityEngine.Random.Range(0, goodMeows.Length)];
         audio.PlayOneShot(clip);
     }
+}
+
+public class DialogueComponent {
+    public string text;
 }
